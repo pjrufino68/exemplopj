@@ -23,10 +23,10 @@ hide_st_style = """
             .reportview-container .main footer {visibility: hidden;}
             </style>
             """
-st.set_page_config(page_title="hacBot responde!!!")
+st.set_page_config(page_title="Maria responde!!!")
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-st.write("### :sunglasses: Dicas & Dúvidas / Hospedagem & Turismo")
+st.write("### 🤖 Dicas & Dúvidas / Fretamento & Turismo")
 
 client = OpenAI(api_key=os.getenv("chaveApi"))
 
@@ -61,7 +61,7 @@ with st.container():
             break
         else:
             msg = enviarIA(texto, lista)
-            st.chat_message("assistant").write(msg)
+            st.chat_message("🤖").write(msg)
         i = i + 1
         
 
