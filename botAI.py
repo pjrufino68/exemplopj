@@ -1,10 +1,13 @@
 import streamlit as st
+import pandas as pd
+import PyPDF2
 import openai
 import keyboard
 import os
 import psutil
 import time
 from dotenv import load_dotenv
+import secrets
 
 from openai import OpenAI
 
@@ -23,17 +26,85 @@ hide_st_style = """
             .reportview-container .main footer {visibility: hidden;}
             </style>
             """
-st.set_page_config(page_title="Maria responde!!!")
+st.set_page_config(page_title="BotTina responde!!!")
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
 st.write("### 🤖 Dicas & Dúvidas / Fretamento & Turismo")
 
 client = OpenAI(api_key=os.getenv("chaveApi"))
 
+# Função para processar arquivo PDF
+def processar_pdf(caminho_pdf):
+    with open(caminho_pdf, "rb") as file:
+        reader = PyPDF2.PdfReader(file)
+        textoPDF = ""
+        for page in range(len(reader.pages)):
+            textoPDF += reader.pages[page].extract_text()
+    return textoPDF
+
+# Função para processar arquivos CSV
+def processar_csv(caminho_csv):
+    df = pd.read_csv(caminho_csv)
+    return df.to_string()
+
+# Função para processar arquivos de texto (.txt)
+def processar_txt(caminho_txt):
+    with open(caminho_txt, "r", encoding="utf-8") as file:
+        return file.read()
+    
+# Carregar o conteúdo dos arquivos da pasta secreta
+def carregar_arquivos_secretos(pasta_secreta):
+    dados_adicionais = {}
+    
+    # Caminhos dos arquivos
+
+    #caminho_pdf = os.path.join(pasta_secreta, "dados.pdf")
+    #caminho_csv = os.path.join(pasta_secreta, "dados.csv")
+    #caminho_txt = os.path.join(pasta_secreta, "dados.txt")
+    
+    caminho_pdf = st.secrets["dados"]["arquivoPDF"]
+    caminho_csv = st.secrets["dados"]["arquivoCSV"]
+    caminho_txt = st.secrets["dados"]["arquivoTXT"]
+
+    #print(caminho_pdf)
+    #print(caminho_txt)
+
+    # Processar arquivos se existirem
+    if os.path.exists(caminho_pdf):
+        dados_adicionais["pdf"] = processar_pdf(caminho_pdf)
+    else:
+        dados_adicionais["pdf"] = "Arquivo PDF não encontrado."
+    
+    #if os.path.exists(caminho_csv):
+    #    dados_adicionais["csv"] = processar_csv(caminho_csv)
+    #else:
+    #    dados_adicionais["csv"] = "Arquivo CSV não encontrado."
+    
+    if os.path.exists(caminho_txt):
+        dados_adicionais["txt"] = processar_txt(caminho_txt)
+    else:
+        dados_adicionais["txt"] = "Arquivo TXT não encontrado."
+    
+    return dados_adicionais
+
+# Caminho para a pasta secreta (ajuste conforme necessário)
+pasta_secreta = "/dados"
+
+# Carregar o conteúdo dos arquivos
+dados_adicionais = carregar_arquivos_secretos(pasta_secreta)
+
+maisDados = f"""O conteúdo de alguns arquivos foi carregado para enriquecer suas respostas. Aqui estão as informações que você pode usar:
+    
+    --- Dados do Arquivo PDF ---
+    {dados_adicionais['pdf']}
+    
+    --- Dados do Arquivo TXT ---
+    {dados_adicionais['txt']}
+    """
 # Instrucoes iniciais para o Bot
 assistant_instructions = {
     "role": "system",
-    "content": os.getenv("contentBot")
+    "content": os.getenv("contentBot") + maisDados
 }
 
 lista = []
@@ -44,6 +115,7 @@ st.session_state["messages"] = lista
 @st.cache_data
 
 def enviarIA(textoRecebido, _lista):
+    lista.append(assistant_instructions)
     lista.append({"role": "user", "content": texto})
     response = client.chat.completions.create(model="gpt-4o-mini", messages=lista)
     lista.append(response)
