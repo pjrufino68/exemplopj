@@ -1,1 +1,5 @@
-
+Nossa frota tem:
+Ônibus com 50 lugares, tv, ar, wc.
+Micro-ônibus com 26 lugares, tv, ar, wc.
+Vans com 16 lugares, tv, ar.
+Nossa frota é monitorada.
