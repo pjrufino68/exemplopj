@@ -102,11 +102,11 @@ maisDados = f"""Usar também estas informações:
 # Instrucoes iniciais para o Bot
 assistant_instructions = {
     "role": "system",
-    "content": os.getenv("contentBot") + maisDados
+    "content": os.getenv("""contentBot""") + maisDados
 }
 
 #print (maisDados)
-st.write(maisDados)
+#st.write(maisDados)
 
 lista = []
 lista.insert(0, assistant_instructions)
