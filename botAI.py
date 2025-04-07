@@ -93,12 +93,10 @@ pasta_secreta = "/dados"
 # Carregar o conteúdo dos arquivos
 dados_adicionais = carregar_arquivos_secretos(pasta_secreta)
 
-maisDados = f"""O conteúdo de alguns arquivos foi carregado para enriquecer suas respostas. Aqui estão as informações que você pode usar:
+maisDados = f"""Usar também estas informações:
     
-    --- Dados do Arquivo PDF ---
     {dados_adicionais['pdf']}
     
-    --- Dados do Arquivo TXT ---
     {dados_adicionais['txt']}
     """
 # Instrucoes iniciais para o Bot
@@ -108,6 +106,7 @@ assistant_instructions = {
 }
 
 #print (maisDados)
+st.write(maisDados)
 
 lista = []
 lista.insert(0, assistant_instructions)
