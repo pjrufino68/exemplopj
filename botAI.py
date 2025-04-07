@@ -107,6 +107,8 @@ assistant_instructions = {
     "content": os.getenv("contentBot") + maisDados
 }
 
+#print (maisDados)
+
 lista = []
 lista.insert(0, assistant_instructions)
 
